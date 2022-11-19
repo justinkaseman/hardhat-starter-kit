@@ -3,7 +3,7 @@ pragma solidity ^0.8.6;
 
 import "./EnumerableSet.sol";
 import "./OCR2DROracle.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/TypeAndVersionInterface.sol";
+import "./interfaces/TypeAndVersionInterface.sol";
 
 /**
  * @title OCR2DROracle Factory
