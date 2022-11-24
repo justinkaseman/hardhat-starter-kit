@@ -39,7 +39,7 @@ task("on-demand-request", "Calls an On Demand API Consumer Contract to request e
 
         // Set up a listener to log the requestID
 
-        const waitForRequestSentEvent = new Promise((resolve, _) => {
+        const waitForRequestSentEvent = new Promise(async (resolve, _) => {
             apiConsumerContract.on(
                 'RequestSent',
                 (requestId) => {
@@ -50,7 +50,8 @@ task("on-demand-request", "Calls an On Demand API Consumer Contract to request e
     
             console.log("Requesting with the following input:\n", { ...request })
             const arguments = [request.source, request.secrets, request.args, 1]
-            apiConsumerContract.executeRequest(...arguments)
+            const executeTx = await apiConsumerContract.executeRequest(...arguments)
+            console.log(executeTx)
         })
 
         await waitForRequestSentEvent
