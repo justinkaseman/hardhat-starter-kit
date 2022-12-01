@@ -1,4 +1,4 @@
-const creditScore = 99
+const creditScore = 96
 
 // We must pad the start so that the length is always 32 bytes because Solidity data is encoded in 32 byte chunks
 // (64 hex characters = 32 bytes)

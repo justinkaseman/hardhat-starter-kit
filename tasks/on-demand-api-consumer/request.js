@@ -148,6 +148,7 @@ task("on-demand-request", "Calls an On Demand API consumer contract to request e
 
                 apiConsumerContract.on("OCRResponse", async (result, err) => {
                     console.log(`Request ${requestId} fulfilled!`)
+
                     if (result !== "0x") {
                         console.log(
                             `\nResponse represented as a hex string: ${result}\n${getDecodedResultLog(
@@ -155,6 +156,11 @@ task("on-demand-request", "Calls an On Demand API consumer contract to request e
                                 result
                             )}`
                         )
+
+                        let addr = await apiConsumerContract.addr()
+                        let score = await apiConsumerContract.score()
+                
+                        console.log({ addr, score })
                     } else {
                         console.log(`\nResponse error: ${Buffer.from(err.slice(2), "hex")}\n`)
                     }
