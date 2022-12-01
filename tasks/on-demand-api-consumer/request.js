@@ -106,7 +106,7 @@ task("on-demand-request", "Calls an On Demand API consumer contract to request e
                     rl.close()
                     return resolve()
                 }
-                rl.pause()
+                rl.close()
 
                 console.log(
                     "\nRequesting new data from On Demand API Consumer contract ",

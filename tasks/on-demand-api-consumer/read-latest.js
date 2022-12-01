@@ -23,14 +23,19 @@ task(
 
         //Create connection to API Consumer Contract and call the createRequestTo function
         const apiConsumerContract = new ethers.Contract(contractAddr, APIConsumer.interface, signer)
-        let latestRequestId = await apiConsumerContract.latestRequestId()
+
         let latestResponse = await apiConsumerContract.latestResponse()
         let responseStr = latestResponse.toString()
+
+        let addr = await apiConsumerContract.addr()
+        let score = await apiConsumerContract.score()
+
+        console.log({ addr, score })
 
         console.log(`💾 On-chain data represented as a hex string: ${responseStr}`)
 
         const config = require('../../on-demand-request-config')
-        if (config.expectedReturnType) {
+        if (config.expectedReturnType && config.expectedReturnType !== 'Buffer') {
             let decodedData
             switch (config.expectedReturnType) {
                 case 'uint256':

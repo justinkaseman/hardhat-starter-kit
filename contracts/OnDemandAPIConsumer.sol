@@ -17,6 +17,9 @@ contract OnDemandAPIConsumer is OCR2DRClient, ConfirmedOwner {
     bytes public latestResponse;
     bytes public latestError;
 
+    address public addr;
+    uint8 public score;
+
     event OCRResponse(bytes result, bytes err);
 
     /**
@@ -75,8 +78,21 @@ contract OnDemandAPIConsumer is OCR2DRClient, ConfirmedOwner {
         bytes memory response,
         bytes memory err
     ) internal override {
+        latestRequestId = requestId;
         latestResponse = response;
-        latestError = err;
+        (score, addr) = abi.decode(response, (uint8, address));
+        emit OCRResponse(response, err);
+    }
+
+    // This function is just so you can simulate what a fulfillment from the oracle will do
+    function testFulfillRequest(
+        bytes32 requestId,
+        bytes memory response,
+        bytes memory err
+    ) public {
+        latestRequestId = requestId;
+        latestResponse = response;
+        (score, addr) = abi.decode(response, (uint8, address));
         emit OCRResponse(response, err);
     }
 }
