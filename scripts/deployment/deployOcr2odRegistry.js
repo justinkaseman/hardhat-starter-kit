@@ -2,10 +2,11 @@ const { ethers, network, run } = require("hardhat")
 const {
     VERIFICATION_BLOCK_CONFIRMATIONS,
     developmentChains,
+    networkConfig,
 } = require("../../helper-hardhat-config")
 
 const config = {
-    maxGasLimit: 1_000_000,
+    maxGasLimit: 450_000,
     stalenessSeconds: 86_400,
     gasAfterPaymentCalculation: 21_000 + 5_000 + 2_100 + 20_000 + 2 * 2_100 - 15_000 + 7_315,
     weiPerUnitLink: ethers.BigNumber.from("5000000000000000"),
@@ -31,26 +32,26 @@ async function deployOcr2odRegistry(chainId = network.config.chainId) {
         linkToken = await linkTokenFactory.connect(deployer).deploy()
         linkTokenAddress = linkToken.address
     } else {
-        ethLinkFeedAddress = networkConfig[chainId]["ethLinkPriceFeed"]
+        ethLinkFeedAddress = networkConfig[chainId]["linkEthPriceFeed"]
         linkTokenAddress = networkConfig[chainId]["linkToken"]
     }
 
     const registryFactory = await ethers.getContractFactory("OCR2DRRegistry")
-    registry = await registryFactory.connect(deployer).deploy(linkTokenAddress, ethLinkFeedAddress)
+    registry = await registryFactory.deploy(linkTokenAddress, ethLinkFeedAddress)
 
     const waitBlockConfirmations = developmentChains.includes(network.name)
         ? 1
         : VERIFICATION_BLOCK_CONFIRMATIONS
-    await registryFactory.deployTransaction.wait(waitBlockConfirmations)
+    await registry.deployTransaction.wait(waitBlockConfirmations)
 
     // Set up OCR2DR Registry
-    // await registry.setConfig(
-    //     config.maxGasLimit,
-    //     config.stalenessSeconds,
-    //     config.gasAfterPaymentCalculation,
-    //     config.weiPerUnitLink,
-    //     config.gasOverhead
-    // )
+    await registry.setConfig(
+        config.maxGasLimit,
+        config.stalenessSeconds,
+        config.gasAfterPaymentCalculation,
+        config.weiPerUnitLink,
+        config.gasOverhead
+    )
 
     console.log(`OCR2ODRegistry deployed to ${registry.address} on ${network.name}`)
 

@@ -90,13 +90,17 @@ async function deployOnDemandApiConsumer(chainId = network.config.chainId) {
         linkToken = new ethers.Contract(linkTokenAddress, LINK_TOKEN_ABI, deployer)
     }
 
-    const args = [oracleAddress]
     const apiConsumerFactory = await ethers.getContractFactory("OnDemandAPIConsumer")
-    const apiConsumer = await apiConsumerFactory.deploy(...args)
+
+    console.log('Deploying OnDemandAPIConsumer contract')
+    const apiConsumer = await apiConsumerFactory.deploy(oracleAddress)
 
     const waitBlockConfirmations = developmentChains.includes(network.name)
         ? 1
         : VERIFICATION_BLOCK_CONFIRMATIONS
+    console.log(
+        `Waiting ${waitBlockConfirmations} blocks for transaction ${apiConsumer.deployTransaction.hash} to be confirmed...`
+    )
     await apiConsumer.deployTransaction.wait(waitBlockConfirmations)
 
     console.log(`OnDemandAPIConsumer deployed to ${apiConsumer.address} on ${network.name}`)
@@ -107,17 +111,13 @@ async function deployOnDemandApiConsumer(chainId = network.config.chainId) {
     }
 
     if (!developmentChains.includes(network.name) && process.env.ETHERSCAN_API_KEY) {
+        console.log("Verifying contract...")
         await run("verify:verify", {
             address: apiConsumer.address,
-            constructorArguments: args,
+            constructorArguments: [oracleAddress],
         })
+        console.log("Contract verified")
     }
-
-    // auto-funding
-    const fundAmount = networkConfig[chainId]["fundAmount"]
-    await linkToken.transfer(apiConsumer.address, fundAmount)
-
-    console.log(`OnDemandAPIConsumer funded with ${fundAmount} JUELS`)
 
     return { apiConsumer, mockOracle, mockRegistry, subscriptionId }
 }

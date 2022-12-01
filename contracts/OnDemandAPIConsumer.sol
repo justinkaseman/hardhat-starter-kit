@@ -17,6 +17,8 @@ contract OnDemandAPIConsumer is OCR2DRClient, ConfirmedOwner {
     bytes public latestResponse;
     bytes public latestError;
 
+    event OCRResponse(bytes result, bytes err);
+
     /**
      * @notice Executes once when a contract is created to initialize state variables
      *
@@ -50,7 +52,12 @@ contract OnDemandAPIConsumer is OCR2DRClient, ConfirmedOwner {
         if (secrets.length > 0) req.addInlineSecrets(secrets);
         if (args.length > 0) req.addArgs(args);
 
-        bytes32 assignedReqID = sendRequest(req, subscriptionId, gasLimit);
+        bytes32 assignedReqID = sendRequest(
+            req,
+            subscriptionId,
+            gasLimit,
+            tx.gasprice
+        );
         latestRequestId = assignedReqID;
         return assignedReqID;
     }
@@ -70,5 +77,6 @@ contract OnDemandAPIConsumer is OCR2DRClient, ConfirmedOwner {
     ) internal override {
         latestResponse = response;
         latestError = err;
+        emit OCRResponse(response, err);
     }
 }

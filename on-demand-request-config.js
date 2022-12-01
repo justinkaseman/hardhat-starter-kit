@@ -1,5 +1,8 @@
 const fs = require('fs')
 
+// Loads environment variables from .env file (if it exists)
+require('dotenv').config()
+
 const Location = {
   Inline: 0
 }

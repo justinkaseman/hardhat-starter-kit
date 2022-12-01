@@ -16,6 +16,7 @@ async function deployOcr2odOracleFactory() {
     const waitBlockConfirmations = developmentChains.includes(network.name)
         ? 1
         : VERIFICATION_BLOCK_CONFIRMATIONS
+    console.log(`Waiting ${waitBlockConfirmations} blocks for transaction ${mockOracleFactory.deployTransaction.hash} to be confirmed...`)
     await mockOracleFactory.deployTransaction.wait(waitBlockConfirmations)
 
     console.log(`OCR2ODOracleFactory deployed to ${mockOracleFactory.address} on ${network.name}`)
