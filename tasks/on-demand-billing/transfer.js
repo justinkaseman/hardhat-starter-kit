@@ -5,7 +5,7 @@ const {
 } = require("../../helper-hardhat-config")
 
 task(
-    "on-demand-sub-transfer",
+    "on-demand-transfer-sub",
     "Accepts ownership of an On-Demand subscription after a a transfer is requested"
 )
     .addParam("subid", "Subscription ID")
